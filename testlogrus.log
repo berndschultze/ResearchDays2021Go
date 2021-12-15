@@ -1,0 +1,3 @@
+time="2021-12-15T15:13:31+01:00" level=info msg="Hello, World!"
+time="2021-12-15T15:13:31+01:00" level=debug msg="[Subscription: topic: group_a, monitoring frequency: 5000, qos: 1]" topic=group_a
+time="2021-12-15T15:13:31+01:00" level=debug msg="Subscription Logger" topic=group_a
