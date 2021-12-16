@@ -19,7 +19,7 @@ func TestToString(t *testing.T) {
 
 func TestToStringTable(t *testing.T) {
 	tables := []struct {
-		sub                 subscription
+		sub                 Subscription
 		groupTopic          string
 		monitoringFrequency int
 		qos                 int
