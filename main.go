@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"sync"
+	"time"
 	varconfig "ttslight/config/variables"
 	"ttslight/publication/publication"
 	"ttslight/subscription/subscription"
@@ -65,11 +67,34 @@ func loadVariables() []variable.Variable {
 	return variables
 }
 
+func waitTimeout(wg *sync.WaitGroup, timeout time.Duration) bool {
+	c := make(chan struct{})
+	go func() {
+		defer close(c)
+		wg.Wait()
+	}()
+	select {
+	case <-c:
+		return true
+	case <-time.After(timeout):
+		return false
+	}
+}
+
 func publish() {
 	subscription1 := subscription.New("group_a", 2000, 1)
 	subscription1.AddVariables(loadVariables())
 	publication1 := publication.New(subscription1)
-	publication1.Publish()
+	publication1.Publish(0)
+	log.Debug("Start Publish")
+	var wg sync.WaitGroup
+	wg.Add(1)
+	go publication1.StartPublishing(&wg, 5)
+	time.Sleep(2 * time.Second)
+	log.Debug("Publishing")
+	//wg.Wait()
+	result := waitTimeout(&wg, 10*time.Second)
+	log.Debugf("Wait Timeout: %v", result)
 }
 
 func main() {
