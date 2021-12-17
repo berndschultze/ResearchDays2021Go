@@ -1,0 +1,17 @@
+[
+    {
+        "name": "var1",
+        "type": 1,
+        "path": "somepath"
+    },
+    {
+        "name": "var2",
+        "type": 2,
+        "path": "someotherpath"
+    },
+    {
+        "name": "var3",
+        "type": 3,
+        "path": "differentpath"
+    }
+]
