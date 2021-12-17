@@ -15,16 +15,16 @@ type publication struct {
 	Variables           []variable.Variable
 }
 
-func New(subs subscription.Subscription) publication {
+func New(subs *subscription.Subscription) publication {
 	e := publication{subs.GroupTopic, subs.MonitoringFrequency, subs.Variables}
 	return e
 }
 
-func (p publication) Publish(index int) {
+func (p *publication) Publish(index int) {
 	log.Debugf("Publish publication number %v for %v with variables %v", index, p.GroupTopic, p.Variables)
 }
 
-func (p publication) StartPublishing(wg *sync.WaitGroup, number int) {
+func (p *publication) StartPublishing(wg *sync.WaitGroup, number int) {
 	defer wg.Done()
 
 	for i := 1; i <= number; i++ {

@@ -1,6 +1,7 @@
 package publication
 
 import (
+	"strings"
 	"sync"
 	"time"
 	"ttslight/subscription/subscription"
@@ -12,7 +13,7 @@ import (
 type Publication struct {
 	GroupTopic          string
 	MonitoringFrequency int
-	Variables           []variable.Variable
+	Variables           []*variable.Variable
 	running             bool
 }
 
@@ -22,7 +23,11 @@ func New(subs *subscription.Subscription) Publication {
 }
 
 func (p *Publication) Publish(index int) {
-	log.Debugf("Publish publication number %v for %v with variables %v", index, p.GroupTopic, p.Variables)
+	var varistr []string
+	for _, vari := range p.Variables {
+		varistr = append(varistr, vari.ToString())
+	}
+	log.Debugf("Publish publication number %v for %v with variables %v", index, p.GroupTopic, strings.Join(varistr, ", "))
 }
 
 func (p *Publication) StartPublishing(wg *sync.WaitGroup) {
