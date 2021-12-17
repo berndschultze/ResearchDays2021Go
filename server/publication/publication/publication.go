@@ -9,26 +9,43 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-type publication struct {
+type Publication struct {
 	GroupTopic          string
 	MonitoringFrequency int
 	Variables           []variable.Variable
+	running             bool
 }
 
-func New(subs subscription.Subscription) publication {
-	e := publication{subs.GroupTopic, subs.MonitoringFrequency, subs.Variables}
+func New(subs *subscription.Subscription) Publication {
+	e := Publication{subs.GroupTopic, subs.MonitoringFrequency, subs.Variables, false}
 	return e
 }
 
-func (p publication) Publish(index int) {
+func (p *Publication) Publish(index int) {
 	log.Debugf("Publish publication number %v for %v with variables %v", index, p.GroupTopic, p.Variables)
 }
 
-func (p publication) StartPublishing(wg *sync.WaitGroup, number int) {
+func (p *Publication) StartPublishing(wg *sync.WaitGroup) {
 	defer wg.Done()
+	defer p.deferStop()
 
-	for i := 1; i <= number; i++ {
-		p.Publish(i)
+	p.running = true
+
+	counter := 1
+
+	for p.running {
+		p.Publish(counter)
+		counter++
 		time.Sleep(time.Duration(p.MonitoringFrequency) * time.Millisecond)
 	}
+}
+
+func (p *Publication) deferStop() {
+	log.Infof("Defer Stop %v", p.GroupTopic)
+	p.Stop()
+}
+
+func (p *Publication) Stop() {
+	p.running = false
+	log.Infof("Stopped %v", p.GroupTopic)
 }
