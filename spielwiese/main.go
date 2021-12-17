@@ -7,6 +7,7 @@ import (
 	"sync"
 	"time"
 	varconfig "ttslight/config/variables"
+	"ttslight/member"
 	"ttslight/publication/publication"
 	"ttslight/subscription/subscription"
 	"ttslight/subscription/variable"
@@ -62,7 +63,7 @@ func loadVariables() []variable.Variable {
 	}
 	var variables []variable.Variable
 	for _, varcon := range data {
-		variables = append(variables, variable.NewFromConf(varcon))
+		variables = append(variables, variable.NewFromConf(&varcon))
 	}
 	return variables
 }
@@ -84,7 +85,7 @@ func waitTimeout(wg *sync.WaitGroup, timeout time.Duration) bool {
 func publish() {
 	subscription1 := subscription.New("group_a", 2000, 1)
 	subscription1.AddVariables(loadVariables())
-	publication1 := publication.New(subscription1)
+	publication1 := publication.New(&subscription1)
 	publication1.Publish(0)
 	log.Debug("Start Publish")
 	var wg sync.WaitGroup
@@ -97,8 +98,36 @@ func publish() {
 	log.Debugf("Wait Timeout: %v", result)
 }
 
+func membering() {
+	mem1 := member.New("lala", 1)
+	mem2 := member.New("lolo", 2)
+
+	mem1.PrintCounter()
+	mem2.PrintCounter()
+	mem1.SetCounter(3)
+	mem2.SetCounter(4)
+	mem1.PrintCounter()
+	mem2.PrintCounter()
+
+	mem1.SetContent(5)
+	mem2.SetContent(6)
+	mem1.PrintContent()
+	mem2.PrintContent()
+
+	mem1.SetContentRef(50)
+	mem2.SetContentRef(60)
+	mem1.PrintContent()
+	mem2.PrintContent()
+
+	mem1.SetContentRef(500)
+	mem2.SetContentRef(600)
+	mem1.PrintContentRef()
+	mem2.PrintContentRef()
+}
+
 func main() {
 	initLogging()
+	membering()
 	printSubscription()
 	printVariables()
 	publish()

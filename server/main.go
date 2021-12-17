@@ -54,14 +54,15 @@ func createSubscriptions() {
 	subscriptions = append(subscriptions, &subscription1, &subscription2)
 }
 
-func loadVariables() []variable.Variable {
+func loadVariables() []*variable.Variable {
 	data, err := varconfig.LoadVariables()
 	if err != nil {
 		log.Debugf("Error loading variable config %v", err)
 	}
-	var variables []variable.Variable
+	var variables []*variable.Variable
 	for _, varcon := range data {
-		variables = append(variables, variable.NewFromConf(varcon))
+		vari := variable.NewFromConf(&varcon)
+		variables = append(variables, &vari)
 	}
 	return variables
 }
